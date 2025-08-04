@@ -22,11 +22,11 @@ export default function Header({ statistics }: HeaderProps) {
           
           {/* 統計情報 */}
           {statistics && (
-            <div className="hidden md:flex items-center space-x-4 bg-white bg-opacity-20 rounded-lg px-4 py-2">
-              <BarChart3 className="w-5 h-5" />
+            <div className="hidden md:flex items-center space-x-4 bg-white bg-opacity-90 rounded-lg px-4 py-2 text-gray-900">
+              <BarChart3 className="w-5 h-5 text-purple-600" />
               <div className="text-sm">
-                <div className="font-semibold">総記事数: {statistics.total}件</div>
-                <div className="opacity-90">
+                <div className="font-semibold text-gray-900">総記事数: {statistics.total}件</div>
+                <div className="text-gray-700">
                   最終更新: {new Date(statistics.latestUpdate).toLocaleDateString('ja-JP')}
                 </div>
               </div>
