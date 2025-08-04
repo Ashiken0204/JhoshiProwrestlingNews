@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  output: 'export',
+  trailingSlash: true,
   images: {
     remotePatterns: [
       {
@@ -27,10 +29,14 @@ const nextConfig: NextConfig = {
     ],
   },
   async rewrites() {
+    const apiBaseUrl = process.env.NODE_ENV === 'production' 
+      ? 'https://func-jhoshi-news.azurewebsites.net'
+      : 'http://localhost:7071';
+      
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:7071/api/:path*', // Azure Functions ローカル開発時
+        destination: `${apiBaseUrl}/api/:path*`,
       },
     ];
   },
