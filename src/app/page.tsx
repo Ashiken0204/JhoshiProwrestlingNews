@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { NewsItem, Organization, Statistics } from '@/types/news';
-import { NewsAPI } from '@/lib/api';
+import { fetchNews, fetchOrganizations, fetchStatistics } from '@/lib/api';
 import Header from '@/components/Header';
 import OrganizationFilter from '@/components/OrganizationFilter';
 import NewsCard from '@/components/NewsCard';
@@ -22,15 +22,15 @@ export default function Home() {
       setLoading(true);
       setError(null);
 
-      const [newsData, orgsData, statsData] = await Promise.all([
-        NewsAPI.getNews(selectedOrg, 20),
-        NewsAPI.getOrganizations(),
-        NewsAPI.getStatistics(),
+      const [newsResponse, orgsResponse, statsResponse] = await Promise.all([
+        fetchNews(selectedOrg, 20),
+        fetchOrganizations(),
+        fetchStatistics(),
       ]);
 
-      setNews(newsData);
-      setOrganizations(orgsData);
-      setStatistics(statsData);
+      setNews(newsResponse.data);
+      setOrganizations(orgsResponse.data);
+      setStatistics(statsResponse.data);
     } catch (err) {
       console.error('データ取得エラー:', err);
       setError('ニュースデータの取得に失敗しました。しばらく後でお試しください。');
