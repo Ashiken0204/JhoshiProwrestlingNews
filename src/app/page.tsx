@@ -43,8 +43,8 @@ export default function Home() {
     setSelectedOrg(org);
     try {
       setLoading(true);
-      const newsData = await NewsAPI.getNews(org, 20);
-      setNews(newsData);
+      const newsResponse = await fetchNews(org, 20);
+      setNews(newsResponse.data);
     } catch (err) {
       console.error('フィルタリングエラー:', err);
       setError('ニュースのフィルタリングに失敗しました。');
