@@ -26,6 +26,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'pro-w-wave.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'chocoprowrestling.com',
+      },
     ],
   },
   async rewrites() {
