@@ -17,17 +17,26 @@ async function fetchApi<T>(endpoint: string): Promise<ApiResponse<T>> {
   }
 }
 
-export async function fetchNews(organization?: string, limit: number = 20): Promise<ApiResponse<NewsItem[]>> {
+export async function fetchNews(
+  organization?: string, 
+  limit: number = 20, 
+  page: number = 1
+): Promise<ApiResponse<NewsItem[]>> {
   const params = new URLSearchParams();
   if (organization && organization !== 'all') {
     params.append('organization', organization);
   }
   params.append('limit', limit.toString());
+  params.append('page', page.toString());
   
   const queryString = params.toString();
   const endpoint = `/news${queryString ? `?${queryString}` : ''}`;
   
   return await fetchApi<NewsItem[]>(endpoint);
+}
+
+export async function fetchAllNews(): Promise<ApiResponse<NewsItem[]>> {
+  return await fetchApi<NewsItem[]>('/news?limit=1000');
 }
 
 export async function fetchOrganizations(): Promise<ApiResponse<Organization[]>> {

@@ -15,33 +15,23 @@ export default function OrganizationFilter({
 }: OrganizationFilterProps) {
   return (
     <div className="mb-6">
-      <div className="flex flex-wrap gap-2">
-        {/* 全て表示ボタン */}
-        <button
-          onClick={() => onSelectOrg('all')}
-          className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-            selectedOrg === 'all'
-              ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-md'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          }`}
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+        <label htmlFor="organization-select" className="text-sm font-medium text-gray-700 whitespace-nowrap">
+          団体選択:
+        </label>
+        <select
+          id="organization-select"
+          value={selectedOrg}
+          onChange={(e) => onSelectOrg(e.target.value)}
+          className="w-full sm:w-64 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 bg-white text-gray-900"
         >
-          すべて
-        </button>
-
-        {/* 各団体ボタン */}
-        {organizations.map((org) => (
-          <button
-            key={org.name}
-            onClick={() => onSelectOrg(org.name)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-              selectedOrg === org.name
-                ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-md'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            {org.displayName}
-          </button>
-        ))}
+          <option value="all">すべての団体</option>
+          {organizations.map((org) => (
+            <option key={org.name} value={org.name}>
+              {org.displayName}
+            </option>
+          ))}
+        </select>
       </div>
     </div>
   );

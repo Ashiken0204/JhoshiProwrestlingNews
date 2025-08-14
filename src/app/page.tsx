@@ -2,38 +2,74 @@
 
 import { useState, useEffect } from 'react';
 import { NewsItem, Organization, Statistics } from '@/types/news';
-import { fetchNews, fetchOrganizations, fetchStatistics } from '@/lib/api';
+import { fetchNews, fetchAllNews, fetchOrganizations, fetchStatistics } from '@/lib/api';
 import Header from '@/components/Header';
 import OrganizationFilter from '@/components/OrganizationFilter';
 import NewsCard from '@/components/NewsCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import Pagination from '@/components/Pagination';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 
+const ITEMS_PER_PAGE = 10;
+
 export default function Home() {
-  const [news, setNews] = useState<NewsItem[]>([]);
+  const [allNews, setAllNews] = useState<NewsItem[]>([]);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [statistics, setStatistics] = useState<Statistics | undefined>();
   const [selectedOrg, setSelectedOrg] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // 現在のページのニュースを計算
+  const getCurrentPageNews = () => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return allNews.slice(startIndex, endIndex);
+  };
+
+  // 総ページ数を計算
+  const totalPages = Math.ceil(allNews.length / ITEMS_PER_PAGE);
 
   const fetchData = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const [newsResponse, orgsResponse, statsResponse] = await Promise.all([
-        fetchNews(selectedOrg, 20),
+      const [orgsResponse, statsResponse] = await Promise.all([
         fetchOrganizations(),
         fetchStatistics(),
       ]);
 
-      setNews(newsResponse.data);
       setOrganizations(orgsResponse.data);
       setStatistics(statsResponse.data);
     } catch (err) {
       console.error('データ取得エラー:', err);
-      setError('ニュースデータの取得に失敗しました。しばらく後でお試しください。');
+      setError('データの取得に失敗しました。しばらく後でお試しください。');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchNewsData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      let newsResponse;
+      if (selectedOrg === 'all') {
+        // 全団体の場合は全件取得
+        newsResponse = await fetchAllNews();
+      } else {
+        // 特定団体の場合はページング付きで取得
+        newsResponse = await fetchNews(selectedOrg, ITEMS_PER_PAGE, currentPage);
+      }
+
+      setAllNews(newsResponse.data);
+      setCurrentPage(1); // 団体変更時は1ページ目に戻る
+    } catch (err) {
+      console.error('ニュース取得エラー:', err);
+      setError('ニュースの取得に失敗しました。');
     } finally {
       setLoading(false);
     }
@@ -41,21 +77,40 @@ export default function Home() {
 
   const handleOrganizationChange = async (org: string) => {
     setSelectedOrg(org);
-    try {
-      setLoading(true);
-      const newsResponse = await fetchNews(org, 20);
-      setNews(newsResponse.data);
-    } catch (err) {
-      console.error('フィルタリングエラー:', err);
-      setError('ニュースのフィルタリングに失敗しました。');
-    } finally {
-      setLoading(false);
+    await fetchNewsData();
+  };
+
+  const handlePageChange = async (page: number) => {
+    if (selectedOrg === 'all') {
+      // 全団体の場合はクライアントサイドでページング
+      setCurrentPage(page);
+    } else {
+      // 特定団体の場合はサーバーサイドでページング
+      setCurrentPage(page);
+      try {
+        setLoading(true);
+        const newsResponse = await fetchNews(selectedOrg, ITEMS_PER_PAGE, page);
+        setAllNews(newsResponse.data);
+      } catch (err) {
+        console.error('ページングエラー:', err);
+        setError('ページの読み込みに失敗しました。');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   useEffect(() => {
     fetchData();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (organizations.length > 0) {
+      fetchNewsData();
+    }
+  }, [organizations]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const currentNews = selectedOrg === 'all' ? getCurrentPageNews() : allNews;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -76,7 +131,7 @@ export default function Home() {
             <div>
               <p className="text-red-700">{error}</p>
               <button
-                onClick={fetchData}
+                onClick={fetchNewsData}
                 className="mt-2 inline-flex items-center text-sm text-red-600 hover:text-red-800"
               >
                 <RefreshCw className="w-4 h-4 mr-1" />
@@ -91,21 +146,32 @@ export default function Home() {
 
         {/* ニュース一覧 */}
         {!loading && !error && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {news.length > 0 ? (
-              news.map((item) => (
-                <NewsCard key={item.id} news={item} />
-              ))
-            ) : (
-              <div className="col-span-full text-center py-12">
-                <div className="text-gray-500">
-                  <div className="text-6xl mb-4">📰</div>
-                  <p className="text-lg">ニュースが見つかりませんでした</p>
-                  <p className="text-sm mt-2">別の団体を選択するか、しばらく後でお試しください</p>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {currentNews.length > 0 ? (
+                currentNews.map((item) => (
+                  <NewsCard key={item.id} news={item} />
+                ))
+              ) : (
+                <div className="col-span-full text-center py-12">
+                  <div className="text-gray-500">
+                    <div className="text-6xl mb-4">📰</div>
+                    <p className="text-lg">ニュースが見つかりませんでした</p>
+                    <p className="text-sm mt-2">別の団体を選択するか、しばらく後でお試しください</p>
+                  </div>
                 </div>
-              </div>
+              )}
+            </div>
+
+            {/* ページング */}
+            {!loading && !error && currentNews.length > 0 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             )}
-          </div>
+          </>
         )}
       </main>
 
