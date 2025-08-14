@@ -62,11 +62,10 @@ export default function Home() {
         newsResponse = await fetchAllNews();
       } else {
         // 特定団体の場合はページング付きで取得
-        newsResponse = await fetchNews(selectedOrg, ITEMS_PER_PAGE, currentPage);
+        newsResponse = await fetchNews(selectedOrg, ITEMS_PER_PAGE, 1);
       }
 
       setAllNews(newsResponse.data);
-      setCurrentPage(1); // 団体変更時は1ページ目に戻る
     } catch (err) {
       console.error('ニュース取得エラー:', err);
       setError('ニュースの取得に失敗しました。');
@@ -77,16 +76,38 @@ export default function Home() {
 
   const handleOrganizationChange = async (org: string) => {
     setSelectedOrg(org);
-    await fetchNewsData();
+    setCurrentPage(1); // 団体変更時は1ページ目に戻る
+    
+    try {
+      setLoading(true);
+      setError(null);
+
+      let newsResponse;
+      if (org === 'all') {
+        // 全団体の場合は全件取得
+        newsResponse = await fetchAllNews();
+      } else {
+        // 特定団体の場合はページング付きで取得
+        newsResponse = await fetchNews(org, ITEMS_PER_PAGE, 1);
+      }
+
+      setAllNews(newsResponse.data);
+    } catch (err) {
+      console.error('ニュース取得エラー:', err);
+      setError('ニュースの取得に失敗しました。');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handlePageChange = async (page: number) => {
+    setCurrentPage(page);
+    
     if (selectedOrg === 'all') {
-      // 全団体の場合はクライアントサイドでページング
-      setCurrentPage(page);
+      // 全団体の場合はクライアントサイドでページング（何もしない）
+      return;
     } else {
       // 特定団体の場合はサーバーサイドでページング
-      setCurrentPage(page);
       try {
         setLoading(true);
         const newsResponse = await fetchNews(selectedOrg, ITEMS_PER_PAGE, page);
