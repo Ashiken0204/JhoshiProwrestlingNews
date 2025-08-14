@@ -54,6 +54,10 @@ const nextConfig: NextConfig = {
                protocol: 'https',
                hostname: 'prowrestlingjto.com',
              },
+             {
+               protocol: 'https',
+               hostname: 'evolutionofficialfc.com',
+             },
     ],
   },
   async rewrites() {
