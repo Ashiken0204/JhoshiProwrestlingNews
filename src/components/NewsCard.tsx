@@ -54,6 +54,18 @@ export default function NewsCard({ news }: NewsCardProps) {
     });
   };
 
+  // デフォルト画像をランダムに選択
+  const getRandomDefaultThumbnail = () => {
+    const defaultImages = [
+      '/images/default-thumbnail1.jpg',
+      '/images/default-thumbnail2.jpg',
+      '/images/default-thumbnail3.jpg',
+      '/images/default-thumbnail4.jpg'
+    ];
+    const randomIndex = Math.floor(Math.random() * defaultImages.length);
+    return defaultImages[randomIndex];
+  };
+
   const orgColor = organizationColors[news.organization] || 'bg-gray-500';
   const orgName = organizationNames[news.organization] || news.organization;
 
@@ -61,22 +73,13 @@ export default function NewsCard({ news }: NewsCardProps) {
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
       {/* サムネイル画像部分 */}
       <div className="relative h-48 bg-gray-200">
-        {news.thumbnail ? (
-          <Image
-            src={news.thumbnail}
-            alt={news.title}
-            fill
-            className="object-cover"
-            unoptimized // 外部画像のため
-          />
-        ) : (
-          <div className="flex items-center justify-center h-full bg-gradient-to-br from-pink-100 to-purple-100">
-            <div className="text-gray-400 text-center">
-              <div className="text-4xl mb-2">📰</div>
-              <div className="text-sm">ニュース画像</div>
-            </div>
-          </div>
-        )}
+        <Image
+          src={news.thumbnail || getRandomDefaultThumbnail()}
+          alt={news.title}
+          fill
+          className="object-cover"
+          unoptimized // 外部画像のため
+        />
         
         {/* 団体タグ - 画像の上に配置 */}
         <div className="absolute top-3 left-3">
