@@ -14,6 +14,17 @@ const organizationColors: Record<string, string> = {
   tjpw: 'bg-pink-500',
   wave: 'bg-blue-500',
   ice_ribbon: 'bg-cyan-500',
+  chocopro: 'bg-red-500',
+  sendaigirls: 'bg-green-500',
+  diana: 'bg-indigo-500',
+  oz_academy: 'bg-yellow-500',
+  seadlinnng: 'bg-teal-500',
+  marigold: 'bg-orange-500',
+  marvelous: 'bg-emerald-500',
+  purej: 'bg-rose-500',
+  gokigenpro: 'bg-violet-500',
+  jto: 'bg-sky-500',
+  evolution: 'bg-fuchsia-500',
 };
 
 const organizationNames: Record<string, string> = {
@@ -21,6 +32,17 @@ const organizationNames: Record<string, string> = {
   tjpw: '東京女子プロレス',
   wave: 'プロレスリングWAVE',
   ice_ribbon: 'アイスリボン',
+  chocopro: 'チョコプロ',
+  sendaigirls: '仙女',
+  diana: 'ディアナ',
+  oz_academy: 'OZアカデミー',
+  seadlinnng: 'SEAdLINNNG',
+  marigold: 'マリーゴールド',
+  marvelous: 'マーベラス',
+  purej: 'PURE-J',
+  gokigenpro: 'ゴキゲンプロレス',
+  jto: 'JUST TAP OUT',
+  evolution: 'Evolution女子',
 };
 
 export default function NewsCard({ news }: NewsCardProps) {
