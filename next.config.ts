@@ -30,6 +30,30 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'chocoprowrestling.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'oz-academy.com',
+      },
+                   {
+               protocol: 'https',
+               hostname: 'dsf-marigold.com',
+             },
+             {
+               protocol: 'http',
+               hostname: 'www.marvelcompany.co.jp',
+             },
+             {
+               protocol: 'https',
+               hostname: 'pure-j.jp',
+             },
+             {
+               protocol: 'https',
+               hostname: 'gokigenpro.com',
+             },
+             {
+               protocol: 'https',
+               hostname: 'prowrestlingjto.com',
+             },
     ],
   },
   async rewrites() {
