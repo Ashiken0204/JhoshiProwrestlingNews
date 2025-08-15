@@ -8,6 +8,7 @@ import OrganizationFilter from '@/components/OrganizationFilter';
 import NewsCard from '@/components/NewsCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import Pagination from '@/components/Pagination';
+import ScrollToTopButton from '@/components/ScrollToTopButton';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 
 const ITEMS_PER_PAGE = 10;
@@ -204,6 +205,9 @@ export default function Home() {
           </p>
         </div>
       </footer>
+
+      {/* フローティングボタン */}
+      <ScrollToTopButton />
     </div>
   );
 }
